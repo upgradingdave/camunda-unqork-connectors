@@ -1,0 +1,362 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name": "Unqork REST Outbound Connector",
+  "id": "1322f5a4-f2f8-444e-a327-464ae4a87a79",
+  "version": 1712060726900,
+  "description": "Unqork REST API",
+  "documentationRef": "https://developers.unqork.io/",
+  "category": {
+    "id": "connectors",
+    "name": "Connectors"
+  },
+  "appliesTo": [
+    "bpmn:Task"
+  ],
+  "elementType": {
+    "value": "bpmn:ServiceTask"
+  },
+  "groups": [
+    {
+      "id": "authentication",
+      "label": "Authentication"
+    },
+    {
+      "id": "endpoint",
+      "label": "Unqork API"
+    },
+    {
+      "id": "timeout",
+      "label": "Connection timeout"
+    },
+    {
+      "id": "payload",
+      "label": "Payload"
+    },
+    {
+      "id": "output",
+      "label": "Output mapping"
+    },
+    {
+      "id": "error",
+      "label": "Error handling"
+    },
+    {
+      "id": "retries",
+      "label": "Retries"
+    }
+  ],
+  "properties": [
+    {
+      "value": "io.camunda:http-json:1",
+      "binding": {
+        "property": "type",
+        "type": "zeebe:taskDefinition"
+      },
+      "type": "Hidden"
+    },
+    {
+      "id": "authentication.type",
+      "label": "Type",
+      "description": "<a href=\"https://developers.unqork.io/#section/Authentication\" target=\"_blank\">Unqork Authentication documentation</a>",
+      "value": "bearer",
+      "group": "authentication",
+      "binding": {
+        "name": "authentication.type",
+        "type": "zeebe:input"
+      },
+      "type": "Hidden"
+    },
+    {
+      "id": "unqorkApiEndpoint",
+      "label": "Unqork API Endpoint",
+      "description": "E.g. https://{yourSubdomain}.unqork.io/api/1.0, see <a href=\"https://developers.unqork.io/\" target=\"_blank\">documentation</a>",
+      "value": "",
+      "type": "String" ,
+      "group": "endpoint",
+      "optional": false,
+      "binding": {
+        "name": "unqorkApiEndpoint",
+        "type": "zeebe:input"
+      },
+      "feel":"optional",
+      "constraints": {
+        "notEmpty": true,
+        "pattern": {
+          "value": "^(=|http://|https://|secrets|\\{\\{).*$",
+          "message": "Must be a http(s) URL"
+        }
+      }
+    },
+    {
+      "id": "operationId",
+      "label": "Unqork API Method",
+      "value": "getModuleSubmissions",
+      "group": "endpoint",
+      "binding": {
+        "name": "operationId",
+        "type": "zeebe:input"
+      },
+      "type": "Dropdown",
+      "choices": [
+        {
+          "name": "GET Module Submissions",
+          "value": "getModuleSubmissions"
+        }
+      ]
+    },
+    {
+      "id": "authentication.token",
+      "description": "<a href=\"https://developers.unqork.io/#section/Authentication\" target=\"_blank\">Unqork Authentication documentation</a>",
+      "label": "Bearer token",
+      "optional": false,
+      "constraints": {
+        "notEmpty": true
+      },
+      "feel": "optional",
+      "group": "endpoint",
+      "binding": {
+        "name": "authentication.token",
+        "type": "zeebe:input"
+      },
+      "condition": {
+        "property": "authentication.type",
+        "equals": "bearer",
+        "type": "simple"
+      },
+      "type": "String"
+    },
+    {
+      "id": "unqorkModuleId",
+      "label": "Unqork Module Id",
+      "type":"String",
+      "group": "endpoint",
+      "optional": false,
+      "binding": {
+        "name": "unqorkModuleId",
+        "type": "zeebe:input"
+      },
+      "feel": "optional",
+      "constraints": {
+        "notEmpty": true
+      },
+      "condition": {
+        "property": "operationId",
+        "equals": "getModuleSubmissions",
+        "type": "simple"
+      }
+    },
+    {
+      "id": "methodGetModuleSubmissions",
+      "label": "Method",
+      "optional": false,
+      "value": "GET",
+      "constraints": {
+        "notEmpty": true
+      },
+      "group": "endpoint",
+      "binding": {
+        "name": "method",
+        "type": "zeebe:input"
+      },
+      "type": "Hidden",
+      "condition": {
+        "property": "operationId",
+        "equals": "getModuleSubmissions",
+        "type": "simple"
+      }
+    },
+    {
+      "id": "urlGetModuleSubmissions",
+      "label": "URL",
+      "optional": false,
+      "constraints": {
+        "notEmpty": true,
+        "pattern": {
+          "value": "^(=|http://|https://|secrets|\\{\\{).*$",
+          "message": "Must be a http(s) URL"
+        }
+      },
+      "feel": "optional",
+      "group": "endpoint",
+      "binding": {
+        "name": "url",
+        "type": "zeebe:input"
+      },
+      "type": "String",
+      "value": "=unqorkApiEndpoint+\"/modules/\"+unqorkModuleId+\"/submissions\""
+    },
+    {
+      "id": "headers",
+      "label": "Headers",
+      "description": "Map of HTTP headers to add to the request",
+      "optional": true,
+      "feel": "required",
+      "group": "endpoint",
+      "binding": {
+        "name": "headers",
+        "type": "zeebe:input"
+      },
+      "type": "String"
+    },
+    {
+      "id": "queryParameters",
+      "label": "Query parameters",
+      "description": "Map of query parameters to add to the request URL",
+      "optional": true,
+      "feel": "required",
+      "group": "endpoint",
+      "binding": {
+        "name": "queryParameters",
+        "type": "zeebe:input"
+      },
+      "type": "String"
+    },
+    {
+      "id": "connectionTimeoutInSeconds",
+      "label": "Connection timeout in seconds",
+      "description": "Defines the connection timeout in seconds, or 0 for an infinite timeout",
+      "optional": false,
+      "value": "20",
+      "constraints": {
+        "notEmpty": true
+      },
+      "feel": "optional",
+      "group": "timeout",
+      "binding": {
+        "name": "connectionTimeoutInSeconds",
+        "type": "zeebe:input"
+      },
+      "type": "String"
+    },
+    {
+      "id": "readTimeoutInSeconds",
+      "label": "Read timeout in seconds",
+      "description": "Timeout in seconds to read data from an established connection or 0 for an infinite timeout",
+      "optional": false,
+      "value": "20",
+      "constraints": {
+        "notEmpty": true
+      },
+      "feel": "optional",
+      "group": "timeout",
+      "binding": {
+        "name": "readTimeoutInSeconds",
+        "type": "zeebe:input"
+      },
+      "type": "String"
+    },
+    {
+      "id": "writeTimeoutInSeconds",
+      "label": "Write timeout in seconds",
+      "description": "Timeout in seconds to set data or 0 for an infinite timeout",
+      "optional": false,
+      "value": "0",
+      "constraints": {
+        "notEmpty": true
+      },
+      "feel": "optional",
+      "group": "timeout",
+      "binding": {
+        "name": "writeTimeoutInSeconds",
+        "type": "zeebe:input"
+      },
+      "condition": {
+        "property": "method",
+        "oneOf": [
+          "POST",
+          "PUT",
+          "PATCH"
+        ],
+        "type": "simple"
+      },
+      "type": "String"
+    },
+    {
+      "id": "body",
+      "label": "Request body",
+      "description": "Payload to send with the request",
+      "optional": true,
+      "feel": "optional",
+      "group": "payload",
+      "binding": {
+        "name": "body",
+        "type": "zeebe:input"
+      },
+      "condition": {
+        "property": "method",
+        "oneOf": [
+          "POST",
+          "PUT",
+          "PATCH"
+        ],
+        "type": "simple"
+      },
+      "type": "Text"
+    },
+    {
+      "id": "resultVariable",
+      "label": "Result variable",
+      "description": "Name of variable to store the response in",
+      "group": "output",
+      "binding": {
+        "key": "resultVariable",
+        "type": "zeebe:taskHeader"
+      },
+      "type": "String",
+      "value": "unqorkModuleSubmissions"
+    },
+    {
+      "id": "resultExpression",
+      "label": "Result expression",
+      "description": "Expression to map the response into process variables",
+      "feel": "required",
+      "group": "output",
+      "binding": {
+        "key": "resultExpression",
+        "type": "zeebe:taskHeader"
+      },
+      "type": "Text"
+    },
+    {
+      "id": "errorExpression",
+      "label": "Error expression",
+      "description": "Expression to handle errors. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/\" target=\"_blank\">documentation</a>.",
+      "feel": "required",
+      "group": "error",
+      "binding": {
+        "key": "errorExpression",
+        "type": "zeebe:taskHeader"
+      },
+      "type": "Text"
+    },
+    {
+      "id": "retryCount",
+      "label": "Retries",
+      "description": "Number of retries",
+      "value": "3",
+      "feel": "optional",
+      "group": "retries",
+      "binding": {
+        "property": "retries",
+        "type": "zeebe:taskDefinition"
+      },
+      "type": "String"
+    },
+    {
+      "id": "retryBackoff",
+      "label": "Retry backoff",
+      "description": "ISO-8601 duration to wait between retries",
+      "value": "PT0S",
+      "feel": "optional",
+      "group": "retries",
+      "binding": {
+        "key": "retryBackoff",
+        "type": "zeebe:taskHeader"
+      },
+      "type": "String"
+    }
+  ],
+  "icon": {
+    "contents": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' id='Layer_1' x='0px' y='0px' width='100%25' viewBox='0 0 420 133' enable-background='new 0 0 420 133' xml:space='preserve'%3E%3Cpath fill='%23092750' opacity='1.000000' stroke='none' d=' M401.000916,134.000000 C267.334076,134.000000 134.167465,134.000000 1.000634,134.000000 C1.000422,89.666962 1.000422,45.333927 1.000211,1.000669 C140.999649,1.000446 280.999298,1.000446 420.999207,1.000223 C420.999481,45.332973 420.999481,89.665947 420.999756,133.999451 C414.500366,134.000000 408.000763,134.000000 401.000916,134.000000 M183.534332,81.889137 C190.215973,88.790962 197.479980,87.743927 205.440033,82.637108 C205.440033,88.537148 205.440033,93.614143 205.440033,98.687569 C209.161911,98.687569 212.422485,98.687569 215.882507,98.687569 C215.882507,82.918015 215.882507,67.399406 215.882507,51.116600 C212.336960,52.600002 207.525696,48.602406 206.298080,55.134277 C195.497635,46.176956 183.569305,51.804504 181.200638,60.134590 C179.138153,67.387840 178.922684,74.556412 183.534332,81.889137 M323.180817,82.401016 C319.586914,77.221863 315.992981,72.042709 312.275299,66.685181 C316.535889,61.740360 320.607422,57.014935 325.000519,51.916328 C317.748169,50.606407 311.993805,50.966408 308.162018,57.687252 C306.441132,60.705700 303.783722,63.190205 300.622253,67.051666 C300.622253,56.170391 300.622253,46.931351 300.622253,37.560783 C296.987213,37.560783 293.725586,37.560783 290.260132,37.560783 C290.260132,53.692055 290.260132,69.565842 290.260132,85.416626 C293.957397,85.416626 297.327148,85.416626 299.674316,85.416626 C301.199005,81.153442 302.478760,77.575134 303.758484,73.996834 C307.742615,77.695938 309.433990,82.141777 312.649994,84.169434 C315.801727,86.156555 320.505341,85.682335 325.672668,86.460869 C324.448303,84.373627 324.045166,83.686340 323.180817,82.401016 M120.939667,61.481647 C120.937721,63.980709 121.012810,66.482689 120.918137,68.978233 C120.706596,74.554291 117.833420,77.900269 113.460648,77.790924 C109.356293,77.688293 107.688454,75.271111 107.624283,69.083702 C107.564529,63.322308 107.611519,57.559811 107.611519,51.791931 C103.480972,51.791931 100.076187,51.791931 96.747414,51.791931 C96.747414,60.117382 96.367218,68.098984 96.868187,76.024887 C97.266113,82.320610 100.850792,85.454247 107.034622,86.518646 C112.909798,87.529938 117.729782,85.473640 121.846222,80.995949 C122.393585,82.812965 122.820358,84.229668 123.200401,85.491249 C126.146965,85.491249 128.894180,85.491249 131.704727,85.491249 C131.704727,74.069901 131.704727,62.993061 131.704727,51.740410 C128.025726,51.740410 124.612823,51.740410 120.939667,51.740410 C120.939667,54.875706 120.939667,57.697262 120.939667,61.481647 M170.924362,53.525505 C163.498566,48.772453 157.072403,49.608997 149.341751,56.376141 C148.783600,54.722965 148.230972,53.086166 147.823074,51.878052 C144.626755,51.878052 141.902069,51.878052 139.370148,51.878052 C139.370148,63.377964 139.370148,74.439529 139.370148,85.432434 C143.113297,85.432434 146.493454,85.432434 150.091934,85.432434 C150.091934,79.562096 149.961029,74.075409 150.128555,68.597855 C150.297913,63.060303 153.216949,59.987755 157.820679,60.072906 C162.046234,60.151058 163.739975,62.501713 163.802856,68.603943 C163.860550,74.203224 163.815109,79.803574 163.815109,85.463120 C167.789734,85.463120 171.166489,85.463120 174.789734,85.463120 C174.789734,77.480545 175.080490,69.836037 174.636932,62.234375 C174.474854,59.456474 172.568665,56.780338 170.924362,53.525505 M251.640747,83.239960 C260.556519,74.587204 259.581726,57.160976 249.589249,52.691181 C242.156830,49.366539 234.154999,49.061825 227.285934,54.051617 C220.523911,58.963638 220.442062,66.445343 221.702362,73.959915 C222.736801,80.127823 226.244019,84.262909 232.299820,85.817162 C238.755966,87.474182 245.131332,87.257133 251.640747,83.239960 M263.016479,82.229416 C263.623077,86.248894 266.586761,87.019409 273.573364,85.130005 C276.209869,76.105209 268.453552,62.496101 285.299683,60.411663 C285.299683,57.165665 285.299683,54.082886 285.299683,49.285095 C280.516052,51.917351 276.698242,54.018158 273.021088,56.041580 C272.759399,54.966141 272.371552,53.372383 271.964081,51.697807 C268.989258,51.697807 266.237854,51.697807 263.016510,51.697807 C263.016510,61.728779 263.016510,71.504776 263.016479,82.229416 z'/%3E%3Cpath fill='%23F8F9FA' opacity='1.000000' stroke='none' d=' M183.311829,81.590691 C178.922684,74.556412 179.138153,67.387840 181.200638,60.134590 C183.569305,51.804504 195.497635,46.176956 206.298080,55.134277 C207.525696,48.602406 212.336960,52.600002 215.882507,51.116600 C215.882507,67.399406 215.882507,82.918015 215.882507,98.687569 C212.422485,98.687569 209.161911,98.687569 205.440033,98.687569 C205.440033,93.614143 205.440033,88.537148 205.440033,82.637108 C197.479980,87.743927 190.215973,88.790962 183.311829,81.590691 M204.886749,72.754677 C204.907700,70.102592 205.310745,67.384956 204.869431,64.812172 C203.973297,59.588066 198.495163,56.880615 194.204330,59.521320 C189.970276,62.127083 190.351807,66.572220 190.634323,70.739799 C190.869843,74.213860 191.820923,77.423370 195.890060,78.256706 C200.072525,79.113274 203.029007,77.536713 204.886749,72.754677 z'/%3E%3Cpath fill='%23F5F6F8' opacity='1.000000' stroke='none' d=' M323.411407,82.700043 C324.045166,83.686340 324.448303,84.373627 325.672668,86.460869 C320.505341,85.682335 315.801727,86.156555 312.649994,84.169434 C309.433990,82.141777 307.742615,77.695938 303.758484,73.996834 C302.478760,77.575134 301.199005,81.153442 299.674316,85.416626 C297.327148,85.416626 293.957397,85.416626 290.260132,85.416626 C290.260132,69.565842 290.260132,53.692055 290.260132,37.560783 C293.725586,37.560783 296.987213,37.560783 300.622253,37.560783 C300.622253,46.931351 300.622253,56.170391 300.622253,67.051666 C303.783722,63.190205 306.441132,60.705700 308.162018,57.687252 C311.993805,50.966408 317.748169,50.606407 325.000519,51.916328 C320.607422,57.014935 316.535889,61.740360 312.275299,66.685181 C315.992981,72.042709 319.586914,77.221863 323.411407,82.700043 z'/%3E%3Cpath fill='%23F3F4F6' opacity='1.000000' stroke='none' d=' M120.939667,61.000233 C120.939667,57.697262 120.939667,54.875706 120.939667,51.740410 C124.612823,51.740410 128.025726,51.740410 131.704727,51.740410 C131.704727,62.993061 131.704727,74.069901 131.704727,85.491249 C128.894180,85.491249 126.146965,85.491249 123.200401,85.491249 C122.820358,84.229668 122.393585,82.812965 121.846222,80.995949 C117.729782,85.473640 112.909798,87.529938 107.034622,86.518646 C100.850792,85.454247 97.266113,82.320610 96.868187,76.024887 C96.367218,68.098984 96.747414,60.117382 96.747414,51.791931 C100.076187,51.791931 103.480972,51.791931 107.611519,51.791931 C107.611519,57.559811 107.564529,63.322308 107.624283,69.083702 C107.688454,75.271111 109.356293,77.688293 113.460648,77.790924 C117.833420,77.900269 120.706596,74.554291 120.918137,68.978233 C121.012810,66.482689 120.937721,63.980709 120.939667,61.000233 z'/%3E%3Cpath fill='%23F7F8F9' opacity='1.000000' stroke='none' d=' M171.191254,53.791641 C172.568665,56.780338 174.474854,59.456474 174.636932,62.234375 C175.080490,69.836037 174.789734,77.480545 174.789734,85.463120 C171.166489,85.463120 167.789734,85.463120 163.815109,85.463120 C163.815109,79.803574 163.860550,74.203224 163.802856,68.603943 C163.739975,62.501713 162.046234,60.151058 157.820679,60.072906 C153.216949,59.987755 150.297913,63.060303 150.128555,68.597855 C149.961029,74.075409 150.091934,79.562096 150.091934,85.432434 C146.493454,85.432434 143.113297,85.432434 139.370148,85.432434 C139.370148,74.439529 139.370148,63.377964 139.370148,51.878052 C141.902069,51.878052 144.626755,51.878052 147.823074,51.878052 C148.230972,53.086166 148.783600,54.722965 149.341751,56.376141 C157.072403,49.608997 163.498566,48.772453 171.191254,53.791641 z'/%3E%3Cpath fill='%23F7F8F9' opacity='1.000000' stroke='none' d=' M251.351868,83.470200 C245.131332,87.257133 238.755966,87.474182 232.299820,85.817162 C226.244019,84.262909 222.736801,80.127823 221.702362,73.959915 C220.442062,66.445343 220.523911,58.963638 227.285934,54.051617 C234.154999,49.061825 242.156830,49.366539 249.589249,52.691181 C259.581726,57.160976 260.556519,74.587204 251.351868,83.470200 M243.228165,77.884689 C247.231201,74.223457 248.543289,65.645576 245.465942,61.587566 C244.556976,60.388939 242.694458,58.976341 241.469345,59.142223 C238.581940,59.533195 233.756882,60.315952 233.388977,61.831768 C232.322540,66.225670 232.113617,71.341278 233.387497,75.633751 C234.487305,79.339737 238.886475,79.186691 243.228165,77.884689 z'/%3E%3Cpath fill='%23F5F6F8' opacity='1.000000' stroke='none' d=' M263.016479,81.755096 C263.016510,71.504776 263.016510,61.728779 263.016510,51.697807 C266.237854,51.697807 268.989258,51.697807 271.964081,51.697807 C272.371552,53.372383 272.759399,54.966141 273.021088,56.041580 C276.698242,54.018158 280.516052,51.917351 285.299683,49.285095 C285.299683,54.082886 285.299683,57.165665 285.299683,60.411663 C268.453552,62.496101 276.209869,76.105209 273.573364,85.130005 C266.586761,87.019409 263.623077,86.248894 263.016479,81.755096 z'/%3E%3Cpath fill='%23102E55' opacity='1.000000' stroke='none' d=' M204.768021,73.152100 C203.029007,77.536713 200.072525,79.113274 195.890060,78.256706 C191.820923,77.423370 190.869843,74.213860 190.634323,70.739799 C190.351807,66.572220 189.970276,62.127083 194.204330,59.521320 C198.495163,56.880615 203.973297,59.588066 204.869431,64.812172 C205.310745,67.384956 204.907700,70.102592 204.768021,73.152100 z'/%3E%3Cpath fill='%230F2D55' opacity='1.000000' stroke='none' d=' M242.862427,78.015182 C238.886475,79.186691 234.487305,79.339737 233.387497,75.633751 C232.113617,71.341278 232.322540,66.225670 233.388977,61.831768 C233.756882,60.315952 238.581940,59.533195 241.469345,59.142223 C242.694458,58.976341 244.556976,60.388939 245.465942,61.587566 C248.543289,65.645576 247.231201,74.223457 242.862427,78.015182 z'/%3E%3C/svg%3E"
+  }
+}
