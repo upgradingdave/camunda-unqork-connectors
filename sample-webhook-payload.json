@@ -1,0 +1,7 @@
+{
+  "apiEndpoint": "https://partner-sandbox-uat.unqork.io/api/1.0",
+  "moduleId": "655a4a0928917fe9432381d1",
+  "username": "david.paroulek@camunda.com",
+  "userId": "uq6557ca4e04bd73d2da38093f",
+  "password": "{{secrets.UNQORK_PASSWORD}}"
+}
