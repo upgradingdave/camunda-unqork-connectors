@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
   "name": "Unqork Webhook Start Event Connector",
   "id": "18fb9c08-51d9-429a-9ce8-509fa435880d",
-  "version": 1712341209781,
+  "version": 1712343532246,
   "description": "Configure webhook to receive callbacks",
   "documentationRef": "https://docs.camunda.io/docs/components/connectors/out-of-the-box-connectors/http-webhook/",
   "category": {
@@ -63,30 +63,8 @@
       "label": "Webhook method",
       "group": "endpoint",
       "description": "Select HTTP method",
-      "value": "any",
-      "type": "Dropdown",
-      "choices": [
-        {
-          "name": "Any",
-          "value": "any"
-        },
-        {
-          "name": "Get",
-          "value": "get"
-        },
-        {
-          "name": "Post",
-          "value": "post"
-        },
-        {
-          "name": "Put",
-          "value": "put"
-        },
-        {
-          "name": "Delete",
-          "value": "delete"
-        }
-      ],
+      "type": "Hidden",
+      "value": "post",
       "binding": {
         "type": "zeebe:property",
         "name": "inbound.method"
@@ -359,9 +337,8 @@
     },
     {
       "label": "Condition",
-      "type": "String",
+      "type": "Hidden",
       "group": "activation",
-      "feel": "required",
       "optional": true,
       "binding": {
         "type": "zeebe:property",
@@ -390,14 +367,14 @@
         "type": "zeebe:property",
         "name": "resultExpression"
       },
-      "description": "Expression to map the inbound payload to process variables"
+      "description": "Expression to map the inbound payload to process variables",
+      "value": "{\n  \"unqork\": request.body\n}"
     },
     {
       "label": "One time verification response expression",
       "description": "Specify condition and response. Learn more in the <a href='https://docs.camunda.io/docs/components/connectors/protocol/http-webhook/#verification-expression' target='_blank'>documentation</a>",
-      "type": "Text",
+      "type": "Hidden",
       "group": "webhookResponse",
-      "feel": "required",
       "optional": true,
       "binding": {
         "type": "zeebe:property",
@@ -406,9 +383,8 @@
     },
     {
       "label": "Response body expression",
-      "type": "Text",
+      "type": "Hidden",
       "group": "webhookResponse",
-      "feel": "required",
       "optional": true,
       "binding": {
         "type": "zeebe:property",

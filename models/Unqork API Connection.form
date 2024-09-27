@@ -1,0 +1,86 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.4.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "24b1c55"
+  },
+  "schemaVersion": 16,
+  "id": "Form_unqorkConnectionDetails",
+  "components": [
+    {
+      "components": [
+        {
+          "label": "Unqork Customer API Endpoint",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_1i3fkda",
+            "columns": null
+          },
+          "id": "Field_1yo6vdh",
+          "key": "apiEndpoint",
+          "description": "  https://{yourSubdomain}.unqork.io/api/1.0",
+          "defaultValue": "https://partner-sandbox-uat.unqork.io/api/1.0",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Unqork Module Id",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0lxnoja",
+            "columns": null
+          },
+          "id": "Field_0l9sm29",
+          "key": "moduleId",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Unqork Username",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_1m7hzza",
+            "columns": null
+          },
+          "id": "Field_013xg86",
+          "key": "username",
+          "validate": {
+            "required": true
+          },
+          "conditional": {
+            "hide": "=is defined(unqork.bearerToken)"
+          }
+        },
+        {
+          "label": "Unqork Password",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0ag65je",
+            "columns": null
+          },
+          "id": "Field_0qeaizh",
+          "key": "password",
+          "validate": {
+            "required": true
+          },
+          "conditional": {
+            "hide": "=is defined(unqork.bearerToken)"
+          }
+        }
+      ],
+      "showOutline": true,
+      "label": "Unqork API Connection",
+      "type": "group",
+      "layout": {
+        "row": "Row_0nlch32",
+        "columns": null
+      },
+      "id": "Field_1dbxx3i",
+      "path": "unqork"
+    }
+  ],
+  "type": "default"
+}
